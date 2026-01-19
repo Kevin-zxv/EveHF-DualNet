@@ -42,6 +42,8 @@ def test():
     model.eval()
     test_loss = 0.
     correct = 0.
+    all_targets = []
+    all_probs = []
 
     with torch.no_grad():
         for image1, image2, label in tqdm(new_test_loader, desc="Testing"):
@@ -50,11 +52,24 @@ def test():
             test_loss += F.cross_entropy(output, label, reduction='sum').item()
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(label.data.view_as(pred)).cpu().sum()
+            
+            probs = F.softmax(output, dim=1)
+            all_targets.append(label.cpu().numpy())
+            all_probs.append(probs.cpu().numpy())
 
     test_loss /= len(new_test_loader.dataset)
     accuracy = 100. * correct / len(new_test_loader.dataset)
-    print(f'Test Set: Avg Loss: {test_loss:.4f}, Accuracy: {accuracy:.2f}%')
-    logging.info(f'Test Set: Avg Loss: {test_loss:.4f}, Accuracy: {accuracy:.2f}%')
+    
+    all_targets = np.concatenate(all_targets)
+    all_probs = np.concatenate(all_probs)
+    try:
+        auc = roc_auc_score(all_targets, all_probs, multi_class='ovr')
+    except Exception as e:
+        print(f"Error calculating AUC: {e}")
+        auc = 0.0
+        
+    print(f'Test Set: Avg Loss: {test_loss:.4f}, AUC: {auc:.4f}')
+    logging.info(f'Test Set: Avg Loss: {test_loss:.4f}, AUC: {auc:.4f}')
 
 # 运行测试
 test()
