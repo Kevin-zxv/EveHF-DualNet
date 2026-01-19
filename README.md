@@ -16,7 +16,7 @@ You also need the following custom modules (ensure they are in your python path 
 
 ## Data Preparation
 
-For time frame generation and video-to-event conversion, please refer to: [https://github.com/uzh-rpg/rpg_vid2e](https://github.com/uzh-rpg/rpg_vid2e)
+For event frame generation and video-to-event conversion, please refer to: [https://github.com/uzh-rpg/rpg_vid2e](https://github.com/uzh-rpg/rpg_vid2e)
 
 The training script expects data file paths to be provided in text files. You need to prepare two text files:
 1.  **Training List**: A text file containing paths to training images/frames.
